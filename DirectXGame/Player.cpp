@@ -42,17 +42,18 @@ void Player::Update() {
 	// 座標移動
 	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
 	
-	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
-	
 	// 移動限界座標
-	const float kMoveLimitX = 30.0f;
-	const float kMoveLimitY = 20.0f;
+	const float kMoveLimitX = 34.5f;
+	const float kMoveLimitY = 19.0f;
 
 	// 範囲を越えない処理
 	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
 	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
 	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
 	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
+
+	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	
 
 	// キャラクターの座標を画面表示する処理
 	ImGui::Begin("Player");
