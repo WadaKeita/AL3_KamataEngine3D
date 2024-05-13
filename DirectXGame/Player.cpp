@@ -86,7 +86,7 @@ void Player::Update() {
 	ImGui::End();
 }
 
-void Player::Draw(ViewProjection& viewProjection) {
+void Player::Draw(const ViewProjection& viewProjection) {
 	// 3Dモデルを描画
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
 

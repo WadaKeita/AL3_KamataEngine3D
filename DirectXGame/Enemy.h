@@ -2,6 +2,12 @@
 #include "Model.h"
 #include "WorldTransform.h"
 
+// 行動フェーズ
+enum class Phase {
+	Approach,
+	Leave,
+};
+
 /// <summary>
 /// 敵
 /// </summary>
@@ -16,7 +22,7 @@ public:
 
 	void Update();
 
-	void Draw(ViewProjection& viewProjection);
+	void Draw(const ViewProjection& viewProjection);
 
 	void Approach();
 
@@ -30,12 +36,9 @@ private:
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 	
-	// 行動フェーズ
-	enum class Phase {
-		Approach, // 接近する
-		Leave,    // 離脱する
-	};
-	
 	// フェーズ
 	Phase phase_ = Phase::Approach;
+
+	// メンバ関数ポインタのテーブル
+	static void (Enemy::*phaseTable[])();
 };

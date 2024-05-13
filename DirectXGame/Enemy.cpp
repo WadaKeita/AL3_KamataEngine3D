@@ -13,12 +13,12 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 	worldTransform_.Initialize();
 
 	worldTransform_.translation_ = {0, 2, 30};
+
 }
 
 void Enemy::Update() {
-	worldTransform_.UpdateMatrix();
 
-	switch (phase_) {
+	/*switch (phase_) {
 	case Phase::Approach:
 	default:
 		Approach();
@@ -27,7 +27,12 @@ void Enemy::Update() {
 	case Phase::Leave:
 		Leave();
 		break;
-	}
+	}*/
+
+	(this->*phaseTable[static_cast<size_t>(phase_)])();
+
+
+	worldTransform_.UpdateMatrix();
 
 	ImGui::Begin("enemy");
 
@@ -36,7 +41,7 @@ void Enemy::Update() {
 	ImGui::End();
 }
 
-void Enemy::Draw(ViewProjection& viewProjection) {
+void Enemy::Draw(const ViewProjection& viewProjection) {
 
 	// 3Dモデルを描画
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
@@ -74,3 +79,8 @@ void Enemy::Leave() {
 	// 移動（ベクトルを加算）
 	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
 }
+
+void (Enemy::*Enemy::phaseTable[])() = {
+	&Enemy::Approach,
+	&Enemy::Leave
+};
