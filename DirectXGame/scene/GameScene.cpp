@@ -1,14 +1,15 @@
 #include "GameScene.h"
-#include "TextureManager.h"
-#include <cassert>
-#include "imgui.h"
 #include "AxisIndicator.h"
+#include "TextureManager.h"
+#include "imgui.h"
+#include <cassert>
 
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	delete model_;
 	delete player_;
+	delete enemy_;
 	delete debugCamera_;
 }
 
@@ -28,6 +29,13 @@ void GameScene::Initialize() {
 	// 自キャラの初期化
 	player_->Initialize(model_, textureHandle_);
 
+	
+	textureHandle_ = TextureManager::Load("pa_Enemy.png");
+	// 敵の生成
+	enemy_ = new Enemy();
+	// 敵の初期化
+	enemy_->Initialize(model_, textureHandle_);
+
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
 	// 軸方向表示を有効にする
@@ -39,6 +47,11 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 	// 自キャラの更新
 	player_->Update();
+
+	// 敵キャラの更新
+	if (enemy_ != nullptr) {
+		enemy_->Update();
+	}
 
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_C)) {
@@ -100,6 +113,10 @@ void GameScene::Draw() {
 	// 自キャラの描画
 	player_->Draw(viewProjection_);
 
+	// 敵の描画
+	if (enemy_ != nullptr) {
+		enemy_->Draw(viewProjection_);
+	}
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
