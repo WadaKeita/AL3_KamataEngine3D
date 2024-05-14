@@ -1,6 +1,8 @@
 #pragma once
+#include "EnemyBullet.h"
 #include "Model.h"
 #include "WorldTransform.h"
+#include <list>
 
 // 行動フェーズ
 enum class Phase {
@@ -13,6 +15,9 @@ enum class Phase {
 /// </summary>
 class Enemy {
 public:
+
+	~Enemy();
+
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -24,9 +29,32 @@ public:
 
 	void Draw(const ViewProjection& viewProjection);
 
+	/// <summary>
+	/// 接近フェーズ
+	/// </summary>
 	void Approach();
 
+	/// <summary>
+	/// 接近フェーズ初期化
+	/// </summary>
+	void InitializeApproach();
+	
+	/// <summary>
+	/// 離脱フェーズ初期化
+	/// </summary>
+	//void InitializeLeave();
+	/// <summary>
+	/// 離脱フェーズ
+	/// </summary>
 	void Leave();
+
+	/// <summary>
+	/// 弾発射
+	/// </summary>
+	void Fire();
+
+	// 発射間隔
+	static const int kFireInterval = 60;
 
 private:
 	// ワールド変換データ
@@ -35,10 +63,16 @@ private:
 	Model* model_ = nullptr;
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
-	
+
 	// フェーズ
 	Phase phase_ = Phase::Approach;
 
 	// メンバ関数ポインタのテーブル
 	static void (Enemy::*phaseTable[])();
+
+	// 弾
+	std::list<EnemyBullet*> bullets_;
+
+	// 発射タイマー
+	int32_t fireTimer_ = 0;
 };
