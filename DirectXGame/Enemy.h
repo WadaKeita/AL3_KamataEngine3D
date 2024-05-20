@@ -4,6 +4,9 @@
 #include "WorldTransform.h"
 #include <list>
 
+// 自機クラスの前方宣言
+class Player;
+
 // 行動フェーズ
 enum class Phase {
 	Approach,
@@ -56,6 +59,11 @@ public:
 	// 発射間隔
 	static const int kFireInterval = 60;
 
+	void SetPlayer(Player* player) { player_ = player; }
+
+	// ワールド座標を取得
+	Vector3 GetWorldPosition();
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -75,4 +83,7 @@ private:
 
 	// 発射タイマー
 	int32_t fireTimer_ = 0;
+
+	// 自キャラ
+	Player* player_ = nullptr;
 };

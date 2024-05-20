@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include "Function.h"
+#include "Player.h"
 #include "imgui.h"
 #include <cassert>
 
@@ -24,17 +25,6 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 }
 
 void Enemy::Update() {
-
-	/*switch (phase_) {
-	case Phase::Approach:
-	default:
-		Approach();
-		break;
-
-	case Phase::Leave:
-		Leave();
-		break;
-	}*/
 
 	(this->*phaseTable[static_cast<size_t>(phase_)])();
 
@@ -95,7 +85,7 @@ void Enemy::InitializeApproach() {
 	fireTimer_ = kFireInterval;
 }
 
-//void Enemy::InitializeLeave() {}
+// void Enemy::InitializeLeave() {}
 
 void Enemy::Leave() {
 
@@ -113,23 +103,41 @@ void Enemy::Leave() {
 }
 
 void Enemy::Fire() {
-		// 弾があれば解放する(listを使うので必要なし)
-		// 弾の速度
-		const float kBulletSpeed = -1.0f;
-		Vector3 velocity(0, 0, kBulletSpeed);
+	// 弾があれば解放する(listを使うので必要なし)
 
-		// 速度ベクトルを敵機の向きに合わせて回転させる
-		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+	assert(player_);
 
-		// 弾を生成し、初期化
-		EnemyBullet* newBullet = new EnemyBullet();
-		newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+	// 弾の速度
+	const float kBulletSpeed = 1.0f;
+	
+	// 敵キャラ->自キャラへの差分ベクトルを求める
+	Vector3 endPos = player_->GetWorldPosition();
+	Vector3 startPos = GetWorldPosition();
 
-		// 弾を登録する
-		bullets_.push_back(newBullet);
+	// 弾の速度を求める
+	Vector3 velocity = Multiply(kBulletSpeed, Normalize(Subtract(endPos, startPos)));
+
+	//// 速度ベクトルを敵機の向きに合わせて回転させる
+	velocity = TransformNormal(velocity, worldTransform_.matWorld_);
+
+	// 弾を生成し、初期化
+	EnemyBullet* newBullet = new EnemyBullet();
+	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+
+	// 弾を登録する
+	bullets_.push_back(newBullet);
 }
 
-void (Enemy::*Enemy::phaseTable[])() = {
-	&Enemy::Approach,
-	&Enemy::Leave
-};
+Vector3 Enemy::GetWorldPosition() { 
+
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+	// ワールド行列の並行移動成分を取得（ワールド座標）
+	worldPos.x = worldTransform_.translation_.x;
+	worldPos.y = worldTransform_.translation_.y;
+	worldPos.z = worldTransform_.translation_.z;
+
+	return worldPos;
+}
+
+void (Enemy::*Enemy::phaseTable[])() = {&Enemy::Approach, &Enemy::Leave};
