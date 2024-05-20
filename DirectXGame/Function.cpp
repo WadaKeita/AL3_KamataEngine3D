@@ -285,3 +285,14 @@ Matrix4x4 Inverse(const Matrix4x4& m) {
 
 	return result;
 };
+
+
+bool IsCollision(const Sphere& s1, const Sphere& s2) {
+	// 2つの球の中心点間の距離を求める
+	float distance = Length({s2.center.x - s1.center.x, s2.center.y - s1.center.y, s2.center.z - s1.center.z});
+	// 半径の合計よりも短ければ衝突
+	if (distance <= s1.radius + s2.radius) {
+		return true;
+	}
+	return false;
+}

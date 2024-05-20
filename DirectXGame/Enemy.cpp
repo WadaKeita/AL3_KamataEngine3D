@@ -26,8 +26,17 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle) {
 
 void Enemy::Update() {
 
-	(this->*phaseTable[static_cast<size_t>(phase_)])();
+	// デスフラグの立った弾を削除
+	bullets_.remove_if([](EnemyBullet* bullet) {
+		if (bullet->IsDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
 
+	(this->*phaseTable[static_cast<size_t>(phase_)])();
+	
 	// 弾更新
 	for (EnemyBullet* bullet : bullets_) {
 		bullet->Update();
@@ -58,7 +67,7 @@ void Enemy::Approach() {
 	Vector3 move = {0, 0, 0};
 
 	// 移動速度
-	const float kCharacterSpeed = 0.1f;
+	const float kCharacterSpeed = 0.02f;
 
 	move.z -= kCharacterSpeed;
 
@@ -139,5 +148,7 @@ Vector3 Enemy::GetWorldPosition() {
 
 	return worldPos;
 }
+
+void Enemy::OnCollision() {}
 
 void (Enemy::*Enemy::phaseTable[])() = {&Enemy::Approach, &Enemy::Leave};

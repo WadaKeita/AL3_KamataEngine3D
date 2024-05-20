@@ -1,5 +1,6 @@
 #include "GameScene.h"
 #include "AxisIndicator.h"
+#include "Function.h"
 #include "TextureManager.h"
 #include "imgui.h"
 #include <cassert>
@@ -29,7 +30,6 @@ void GameScene::Initialize() {
 	// 自キャラの初期化
 	player_->Initialize(model_, textureHandle_);
 
-	
 	textureHandle_ = TextureManager::Load("pa_Enemy.png");
 	// 敵の生成
 	enemy_ = new Enemy();
@@ -55,6 +55,8 @@ void GameScene::Update() {
 	if (enemy_ != nullptr) {
 		enemy_->Update();
 	}
+
+	CheckAllCollisions();
 
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_C)) {
@@ -134,6 +136,92 @@ void GameScene::Draw() {
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
+
+#pragma endregion
+}
+
+void GameScene::CheckAllCollisions() {
+	// 判定対象AとBの座標
+	Vector3 posA, posB;
+
+	// 自弾リストの取得
+	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
+	// 敵弾リストの取得
+	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
+
+#pragma region 自キャラと敵弾の当たり判定
+	// 自キャラの座標
+	posA = player_->GetWorldPosition();
+
+	// 自キャラと敵弾全ての当たり判定
+	for (EnemyBullet* bullet : enemyBullets) {
+		// 敵弾の座標
+		posB = bullet->GetWorldPosition();
+
+		// 2つの球の中心点間の距離を求める
+		float distance = Length({posB.x - posA.x, posB.y - posA.y, posB.z - posA.z});
+
+		// 球と球の交差判定
+		if (distance <= player_->GetRadius() + bullet->GetRadius()) {
+			// 自キャラの衝突時のコールバックを呼び出す
+			player_->OnCollision();
+			// 敵弾の衝突時のコールバックを呼び出す
+			bullet->OnCollision();
+		}
+	}
+#pragma endregion
+
+#pragma region 自弾と敵キャラの当たり判定
+	// 敵キャラの座標
+	posA = enemy_->GetWorldPosition();
+
+	// 自弾と敵キャラの当たり判定
+	for (PlayerBullet* bullet : playerBullets) {
+		// 自弾の座標
+		posB = bullet->GetWorldPosition();
+
+		// 2つの球の中心点間の距離を求める
+		float distance = Length({posB.x - posA.x, posB.y - posA.y, posB.z - posA.z});
+
+		// 球と球の交差判定
+		if (distance <= enemy_->GetRadius() + bullet->GetRadius()) {
+			// 自キャラの衝突時のコールバックを呼び出す
+			enemy_->OnCollision();
+			// 敵弾の衝突時のコールバックを呼び出す
+			bullet->OnCollision();
+		}
+	}
+#pragma endregion
+
+#pragma region 自弾と敵弾の当たり判定
+
+	// 敵弾の座標
+	posB = enemy_->GetWorldPosition();
+
+
+	// 自弾と敵弾の当たり判定
+	for (PlayerBullet* bulletA : playerBullets) {
+
+		// 自弾の座標
+		posA = bulletA->GetWorldPosition();
+
+		for (EnemyBullet* bulletB : enemyBullets) {
+
+			// 敵弾の座標
+			posB = bulletB->GetWorldPosition();
+
+			// 2つの球の中心点間の距離を求める
+			float distance = Length({posB.x - posA.x, posB.y - posA.y, posB.z - posA.z});
+
+			// 球と球の交差判定
+			if (distance <= bulletA->GetRadius() + bulletB->GetRadius()) {
+				// 自キャラの衝突時のコールバックを呼び出す
+				bulletA->OnCollision();
+				// 敵弾の衝突時のコールバックを呼び出す
+				bulletB->OnCollision();
+			}
+		}
+	}
 
 #pragma endregion
 }

@@ -4,6 +4,14 @@
 #include "cmath"
 #include <cassert>
 
+/// <summary>
+/// 球
+/// </summary>
+struct Sphere {
+	Vector3 center;
+	float radius;
+};
+
 // ベクトル変換
 Vector3 TransformNormal(const Vector3& v, const Matrix4x4& m);
 
@@ -63,3 +71,12 @@ Vector3 Transform(const Vector3& vector, const Matrix4x4& matrix);
 
 // 逆行列
 Matrix4x4 Inverse(const Matrix4x4& m);
+
+
+/// <summary>
+/// 球と球の衝突判定
+/// </summary>
+/// <param name="s1"></param>
+/// <param name="s2"></param>
+/// <returns></returns>
+bool IsCollision(const Sphere& s1, const Sphere& s2);

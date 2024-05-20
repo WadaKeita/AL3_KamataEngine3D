@@ -1,6 +1,6 @@
 #include "EnemyBullet.h"
-#include "TextureManager.h"
 #include "Function.h"
+#include "TextureManager.h"
 #include <cassert>
 
 void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector3& velocity) {
@@ -32,4 +32,18 @@ void EnemyBullet::Update() {
 void EnemyBullet::Draw(const ViewProjection& viewProjection) {
 	// 3Dモデルを描画
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+}
+
+void EnemyBullet::OnCollision() { isDead_ = true; }
+
+Vector3 EnemyBullet::GetWorldPosition() {
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+
+	// ワールド行列の平行移動成分を取得（ワールド座標）
+	worldPos.x = worldTransform_.translation_.x;
+	worldPos.y = worldTransform_.translation_.y;
+	worldPos.z = worldTransform_.translation_.z;
+
+	return worldPos;
 }
