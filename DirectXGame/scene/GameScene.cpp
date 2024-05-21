@@ -12,6 +12,8 @@ GameScene::~GameScene() {
 	delete player_;
 	delete enemy_;
 	delete debugCamera_;
+	delete skydome_;
+	delete modelSkydome_;
 }
 
 void GameScene::Initialize() {
@@ -36,6 +38,13 @@ void GameScene::Initialize() {
 	// 敵の初期化
 	enemy_->Initialize(model_, textureHandle_);
 
+	
+	// 天球の生成
+	skydome_ = new Skydome();
+	modelSkydome_ = Model::CreateFromOBJ("AL_skydome", true);
+	skydome_->Initialize(modelSkydome_);
+
+
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
 	// 軸方向表示を有効にする
@@ -55,6 +64,8 @@ void GameScene::Update() {
 	if (enemy_ != nullptr) {
 		enemy_->Update();
 	}
+
+	skydome_->Update();
 
 	CheckAllCollisions();
 
@@ -122,6 +133,9 @@ void GameScene::Draw() {
 	if (enemy_ != nullptr) {
 		enemy_->Draw(viewProjection_);
 	}
+
+	skydome_->Draw(viewProjection_);
+
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
