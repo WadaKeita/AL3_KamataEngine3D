@@ -9,7 +9,7 @@ Player::~Player() {
 	}
 }
 
-void Player::Initialize(Model* model, uint32_t textureHandle) {
+void Player::Initialize(Model* model, uint32_t textureHandle, const Vector3& position) {
 	// NULLポインタチェック
 	assert(model);
 
@@ -18,13 +18,13 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 
 	worldTransform_.Initialize();
 
+	worldTransform_.translation_ = position;
+
 	// シングルトンインスタンスを取得する
 	input_ = Input::GetInstance();
 }
 
 void Player::Update() {
-	// 行列を定数バッファに転送
-	worldTransform_.UpdateMatrix();
 
 	Rotate();
 
@@ -69,7 +69,8 @@ void Player::Update() {
 	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
 	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
 
-	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	// 行列を定数バッファに転送
+	worldTransform_.UpdateMatrix();
 
 	Attack();
 
@@ -78,6 +79,7 @@ void Player::Update() {
 		bullet->Update();
 	}
 
+	
 	// キャラクターの座標を画面表示する処理
 	ImGui::Begin("Player");
 
@@ -125,24 +127,30 @@ void Player::Attack() {
 
 		// 弾を生成し、初期化
 		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(model_, worldTransform_.translation_, velocity);
+ 		newBullet->Initialize(model_, GetWorldPosition(), velocity);
 
 		// 弾を登録する
 		bullets_.push_back(newBullet);
+
 	}
 }
 
-Vector3 Player::GetWorldPosition() { 
-	
+Vector3 Player::GetWorldPosition() {
+
 	// ワールド座標を入れる変数
 	Vector3 worldPos;
 
 	// ワールド行列の平行移動成分を取得（ワールド座標）
-	worldPos.x = worldTransform_.translation_.x;
-	worldPos.y = worldTransform_.translation_.y;
-	worldPos.z = worldTransform_.translation_.z;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
 
 	return worldPos;
 }
 
 void Player::OnCollision() {}
+
+void Player::SetParent(const WorldTransform* parent) {
+	// 親子関係を結ぶ
+	worldTransform_.parent_ = parent;
+}

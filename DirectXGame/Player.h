@@ -1,8 +1,8 @@
 #pragma once
-#include "Model.h"
-#include "WorldTransform.h"
 #include "Input.h"
+#include "Model.h"
 #include "PlayerBullet.h"
+#include "WorldTransform.h"
 #include <list>
 
 /// <summary>
@@ -20,7 +20,7 @@ public:
 	/// </summary>
 	/// <param name="model">モデル</param>
 	/// <param name="textureHandle">テクスチャハンドル</param>
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* model, uint32_t textureHandle, const Vector3& position);
 
 	/// <summary>
 	/// 更新
@@ -54,6 +54,12 @@ public:
 
 	// 半径を取得
 	const int GetRadius() const { return radius_; };
+
+	/// <summary>
+	/// 親となるワールドトランスフォームをセット
+	/// </summary>
+	/// <param name="parent"></param>
+	void SetParent(const WorldTransform* parent);
 
 private:
 	// ワールド変換データ

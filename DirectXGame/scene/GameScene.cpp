@@ -29,8 +29,9 @@ void GameScene::Initialize() {
 
 	// 自キャラの生成
 	player_ = new Player();
+	Vector3 playerPosition(0, 0, 20);
 	// 自キャラの初期化
-	player_->Initialize(model_, textureHandle_);
+	player_->Initialize(model_, textureHandle_, playerPosition);
 
 	textureHandle_ = TextureManager::Load("pa_Enemy.png");
 	// 敵の生成
@@ -38,6 +39,9 @@ void GameScene::Initialize() {
 	// 敵の初期化
 	enemy_->Initialize(model_, textureHandle_);
 
+	railCamera_ = new RailCamera();
+	// レールカメラの生成
+	railCamera_->Initialize({0, 10, -20}, {0, 0, 0});
 	
 	// 天球の生成
 	skydome_ = new Skydome();
@@ -54,9 +58,16 @@ void GameScene::Initialize() {
 
 	// 敵キャラに自キャラのアドレスを渡す
 	enemy_->SetPlayer(player_);
+
+	// 自キャラとレールカメラの親子関係を結ぶ
+	player_->SetParent(&railCamera_->GetWorldTransform());
 }
 
 void GameScene::Update() {
+
+	// レールカメラの更新
+	railCamera_->Update();
+
 	// 自キャラの更新
 	player_->Update();
 
@@ -81,15 +92,16 @@ void GameScene::Update() {
 
 	// カメラの処理
 	if (isDebugCameraActive_) {
-		// デバッグカメラの更新
-		debugCamera_->Update();
 		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
 		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
 		// ビュープロジェクション行列の転送
 		viewProjection_.TransferMatrix();
 	} else {
+		viewProjection_.matView = railCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
 		// ビュープロジェクション行列の更新と転送
-		viewProjection_.UpdateMatrix();
+		viewProjection_.TransferMatrix();
+
 	}
 
 	ImGui::Begin("camera");
