@@ -16,7 +16,7 @@ void RailCamera::Update() {
 
 	Vector3 moveSpeed = {0, 0, 0};
 	worldTransform_.translation_ = Add(worldTransform_.translation_, moveSpeed);
-	Vector3 rotateSpeed = {0, 0.001f, 0};
+	Vector3 rotateSpeed = {0, 0, 0};
 	worldTransform_.rotation_ = Add(worldTransform_.rotation_, rotateSpeed);
 
 	worldTransform_.UpdateMatrix();
