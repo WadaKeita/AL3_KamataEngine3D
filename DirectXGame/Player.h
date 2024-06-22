@@ -2,7 +2,9 @@
 #include "Input.h"
 #include "Model.h"
 #include "PlayerBullet.h"
+#include "Sprite.h"
 #include "WorldTransform.h"
+#include "ViewProjection.h"
 #include <list>
 
 /// <summary>
@@ -25,13 +27,13 @@ public:
 	/// <summary>
 	/// 更新
 	/// </summary>
-	void Update();
+	void Update(const ViewProjection& viewProjection);
 
 	/// <summary>
 	/// 描画
 	/// </summary>
 	/// <param name="viewProjection">ビュープロジェクション（参照渡し）</param>
-	void Draw(const ViewProjection& viewProjection);
+	void Draw3D(const ViewProjection& viewProjection);
 
 	/// <summary>
 	/// 回転
@@ -45,6 +47,8 @@ public:
 
 	// ワールド座標を取得
 	Vector3 GetWorldPosition();
+
+	Vector3 GetWorldPosition3DReticle();
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
@@ -61,9 +65,15 @@ public:
 	/// <param name="parent"></param>
 	void SetParent(const WorldTransform* parent);
 
+	/// <summary>
+	/// UI描画
+	/// </summary>
+	void DrawUI();
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
+	ViewProjection viewProjection_;
 	// モデル
 	Model* model_ = nullptr;
 	// テクスチャハンドル
@@ -77,4 +87,10 @@ private:
 
 	// 半径
 	const int radius_ = 1;
+
+	// 3Dレティクル用ワールドトランスフォーム
+	WorldTransform worldTransform3DReticle_;
+
+	// 2Dレティクル用スプライト
+	Sprite* sprite2DReticle_ = nullptr;
 };

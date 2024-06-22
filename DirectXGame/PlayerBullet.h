@@ -44,7 +44,7 @@ private:
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0u;
 	// 速度
-	Vector3 velocity_;
+	Vector3 velocity_ = {0, 0, 0};
 	// 寿命<frm>
 	static const int32_t kLifeTime = 60 * 5;
 	// デスタイマー

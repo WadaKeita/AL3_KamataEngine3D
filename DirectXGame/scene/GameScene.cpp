@@ -40,7 +40,7 @@ void GameScene::Initialize() {
 
 	// 自キャラの生成
 	player_ = new Player();
-	Vector3 playerPosition(0, 0, 20);
+	Vector3 playerPosition(0, 0, 40);
 	// 自キャラの初期化
 	player_->Initialize(model_, textureHandle_, playerPosition);
 
@@ -48,7 +48,7 @@ void GameScene::Initialize() {
 
 	railCamera_ = new RailCamera();
 	// レールカメラの生成
-	railCamera_->Initialize({0, 10, -20}, {0, 0, 0});
+	railCamera_->Initialize({0, 0, 0}, {0, 0, 0});
 
 	// 天球の生成
 	skydome_ = new Skydome();
@@ -64,6 +64,11 @@ void GameScene::Initialize() {
 
 	// 自キャラとレールカメラの親子関係を結ぶ
 	player_->SetParent(&railCamera_->GetWorldTransform());
+
+	// レティクルのテクスチャ
+	TextureManager::Load("2Dreticle.png");
+
+	waitTimer = 0;
 }
 
 void GameScene::Update() {
@@ -92,7 +97,7 @@ void GameScene::Update() {
 	railCamera_->Update();
 
 	// 自キャラの更新
-	player_->Update();
+	player_->Update(viewProjection_);
 
 	// 敵キャラの更新
 	for (Enemy* enemy : enemys_) {
@@ -167,7 +172,7 @@ void GameScene::Draw() {
 	/// </summary>
 
 	// 自キャラの描画
-	player_->Draw(viewProjection_);
+	player_->Draw3D(viewProjection_);
 
 	// 敵の描画
 	for (Enemy* enemy : enemys_) {
@@ -192,6 +197,8 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+
+	player_->DrawUI();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

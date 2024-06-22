@@ -45,7 +45,7 @@ void Enemy::Approach() {
 	Vector3 move = {0, 0, 0};
 
 	// 移動速度
-	const float kCharacterSpeed = 0.02f;
+	const float kCharacterSpeed = 0.1f;
 
 	move.z -= kCharacterSpeed;
 

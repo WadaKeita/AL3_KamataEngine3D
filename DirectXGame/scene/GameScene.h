@@ -115,5 +115,5 @@ private: // メンバ変数
 	bool isWait = false;
 
 	// 待機タイマー
-	int32_t waitTimer;
+	int32_t waitTimer = 0;
 };
