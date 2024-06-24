@@ -1,6 +1,6 @@
 #pragma once
-#include "WorldTransform.h"
 #include "ViewProjection.h"
+#include "WorldTransform.h"
 
 class RailCamera {
 
@@ -18,9 +18,11 @@ public:
 	const ViewProjection& GetViewProjection() { return viewProjection_; }
 	const WorldTransform& GetWorldTransform() { return worldTransform_; }
 
-	private:
-		// ワールド変換行列
-	    WorldTransform worldTransform_;
-		// ビュープロジェクション
-	    ViewProjection viewProjection_;
+private:
+	// ワールド変換行列
+	WorldTransform worldTransform_;
+	// ビュープロジェクション
+	ViewProjection viewProjection_;
+
+	Vector3 rotateSpeed = {0, 0, 0};
 };

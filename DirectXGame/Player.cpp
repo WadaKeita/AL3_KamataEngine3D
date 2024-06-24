@@ -38,6 +38,8 @@ void Player::Initialize(Model* model, uint32_t textureHandle, const Vector3& pos
 
 void Player::Update(const ViewProjection& viewProjection) {
 
+	viewProjection;
+
 	Rotate();
 
 	// デスフラグの立った弾を削除
@@ -179,6 +181,10 @@ void Player::WorldConversion(const ViewProjection& viewProjection) {
 	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
 		spritePosition.x += (float)joyState.Gamepad.sThumbRX / SHRT_MAX * 5.0f;
 		spritePosition.y -= (float)joyState.Gamepad.sThumbRY / SHRT_MAX * 5.0f;
+
+		spritePosition.x = min(max(spritePosition.x, 0), WinApp::kWindowWidth);
+		spritePosition.y = min(max(spritePosition.y, 0), WinApp::kWindowHeight);
+
 		// スプライトの座標変更を反映
 		sprite2DReticle_->SetPosition(spritePosition);
 	}
@@ -240,6 +246,30 @@ void Player::Rotate() {
 }
 
 void Player::Attack() {
+	//if (input_->TriggerKey(DIK_SPACE)) {
+	//	// 弾があれば解放する(listを使うので必要なし)
+	//	/*if (bullet_) {
+	//	    delete bullet_;
+	//	    bullet_ = nullptr;
+	//	}*/
+	//	Vector3 velocity;
+	//	// 弾の速度
+	//	const float kBulletSpeed = 1.0f;
+
+	//	// 自機から照準オブジェクトへのベクトル
+	//	velocity = Subtract(GetWorldPosition3DReticle(), GetWorldPosition());
+	//	velocity = Multiply(kBulletSpeed, Normalize(velocity));
+
+
+	//	// 弾を生成し、初期化
+	//	PlayerBullet* newBullet = new PlayerBullet();
+	//	newBullet->Initialize(model_, GetWorldPosition(), velocity);
+
+	//	// 弾を登録する
+	//	bullets_.push_back(newBullet);
+	//}
+
+
 	XINPUT_STATE joyState;
 	// ゲームパッド未接続なら何もせず抜ける
 	if (!Input::GetInstance()->GetJoystickState(0, joyState)) {
@@ -257,9 +287,6 @@ void Player::Attack() {
 		velocity = Subtract(GetWorldPosition3DReticle(), GetWorldPosition());
 		velocity = Multiply(kBulletSpeed, Normalize(velocity));
 
-		// 速度ベクトルを自機の向きに合わせて回転させる
-		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
-
 		// 弾を生成し、初期化
 		PlayerBullet* newBullet = new PlayerBullet();
 		newBullet->Initialize(model_, GetWorldPosition(), velocity);
@@ -268,30 +295,6 @@ void Player::Attack() {
 		bullets_.push_back(newBullet);
 	}
 
-	if (input_->TriggerKey(DIK_SPACE)) {
-		// 弾があれば解放する(listを使うので必要なし)
-		/*if (bullet_) {
-		    delete bullet_;
-		    bullet_ = nullptr;
-		}*/
-		Vector3 velocity;
-		// 弾の速度
-		const float kBulletSpeed = 1.0f;
-
-		// 自機から照準オブジェクトへのベクトル
-		velocity = Subtract(GetWorldPosition3DReticle(), GetWorldPosition());
-		velocity = Multiply(kBulletSpeed, Normalize(velocity));
-
-		// 速度ベクトルを自機の向きに合わせて回転させる
-		velocity = TransformNormal(velocity, worldTransform_.matWorld_);
-
-		// 弾を生成し、初期化
-		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(model_, GetWorldPosition(), velocity);
-
-		// 弾を登録する
-		bullets_.push_back(newBullet);
-	}
 }
 
 Vector3 Player::GetWorldPosition() {
