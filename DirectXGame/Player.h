@@ -70,6 +70,10 @@ public:
 	/// </summary>
 	void DrawUI();
 
+	void ScreenConversion(const ViewProjection& viewProjection);
+
+	void WorldConversion(const ViewProjection& viewProjection);
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
