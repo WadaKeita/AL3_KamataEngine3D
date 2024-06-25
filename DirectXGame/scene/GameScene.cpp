@@ -16,6 +16,7 @@ GameScene::~GameScene() {
 	delete debugCamera_;
 	delete skydome_;
 	delete modelSkydome_;
+	delete railCamera_;
 
 	for (Enemy* enemy : enemys_) {
 		delete enemy;
