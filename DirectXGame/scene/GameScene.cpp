@@ -41,7 +41,7 @@ void GameScene::Initialize() {
 
 	// 自キャラの生成
 	player_ = new Player();
-	Vector3 playerPosition(0, 0, 40);
+	Vector3 playerPosition(0, 0, 30);
 	// 自キャラの初期化
 	player_->Initialize(model_, textureHandle_, playerPosition);
 
@@ -305,6 +305,8 @@ void GameScene::AddEnemy(Vector3 pos) {
 	enemy_->SetGameScene(this);
 	// プレイヤーのアドレスをセットする
 	enemy_->SetPlayer(player_);
+	// レールカメラのアドレスをセットする
+	enemy_->SetRailCamera(railCamera_);
 
 	enemys_.push_back(enemy_);
 }

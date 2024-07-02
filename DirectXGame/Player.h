@@ -62,7 +62,6 @@ public:
 	/// <summary>
 	/// 親となるワールドトランスフォームをセット
 	/// </summary>
-	/// <param name="parent"></param>
 	void SetParent(const WorldTransform* parent);
 
 	/// <summary>

@@ -56,15 +56,15 @@ void Enemy::Approach() {
 		phase_ = Phase::Leave;
 	}
 
-	// 発射タイマーをカウントダウン
-	fireTimer_--;
-	// 指定時間に達した
-	if (fireTimer_ <= 0) {
-		// 弾を発射
-		Fire();
-		// 発射タイマーの初期化
-		fireTimer_ = kFireInterval;
-	}
+	//// 発射タイマーをカウントダウン
+	//fireTimer_--;
+	//// 指定時間に達した
+	//if (fireTimer_ <= 0) {
+	//	// 弾を発射
+	//	Fire();
+	//	// 発射タイマーの初期化
+	//	fireTimer_ = kFireInterval;
+	//}
 }
 
 void Enemy::InitializeApproach() {
@@ -127,6 +127,23 @@ Vector3 Enemy::GetWorldPosition() {
 	return worldPos;
 }
 
-void Enemy::OnCollision() { isDead_ = true; }
+void Enemy::OnCollision() { 
+	Vector3 worldPos;
+	worldPos = GetWorldPosition();
+	
+	Vector3 enemyPos = Transform(worldPos, Inverse(railCamera_->GetWorldTransform().matWorld_));
+
+	
+	// エネミーとレールカメラの親子関係を結ぶ
+	this->SetParent(&railCamera_->GetWorldTransform());
+
+	worldTransform_.translation_ = enemyPos;
+}
 
 void (Enemy::*Enemy::phaseTable[])() = {&Enemy::Approach, &Enemy::Leave};
+
+
+void Enemy::SetParent(const WorldTransform* parent) {
+	// 親子関係を結ぶ
+	worldTransform_.parent_ = parent;
+}

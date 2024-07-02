@@ -40,7 +40,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	viewProjection;
 
-	Rotate();
+	//Rotate();
 
 	// デスフラグの立った弾を削除
 	bullets_.remove_if([](PlayerBullet* bullet) {
@@ -66,25 +66,38 @@ void Player::Update(const ViewProjection& viewProjection) {
 		move.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
 	}
 
-	// 押した方向で移動ベクトルを変更（左右）
-	if (input_->PushKey(DIK_LEFT)) {
+	//// 押した方向で移動ベクトルを変更（左右）
+	//if (input_->PushKey(DIK_LEFT)) {
+	//	move.x -= kCharacterSpeed;
+	//} else if (input_->PushKey(DIK_RIGHT)) {
+	//	move.x += kCharacterSpeed;
+	//}
+	//// 押した方向で移動ベクトルを変更（上下）
+	//if (input_->PushKey(DIK_DOWN)) {
+	//	move.y -= kCharacterSpeed;
+	//} else if (input_->PushKey(DIK_UP)) {
+	//	move.y += kCharacterSpeed;
+	//}
+
+	if (input_->PushKey(DIK_A)) {
 		move.x -= kCharacterSpeed;
-	} else if (input_->PushKey(DIK_RIGHT)) {
+	} else if (input_->PushKey(DIK_D)) {
 		move.x += kCharacterSpeed;
 	}
 	// 押した方向で移動ベクトルを変更（上下）
-	if (input_->PushKey(DIK_DOWN)) {
+	if (input_->PushKey(DIK_S)) {
 		move.y -= kCharacterSpeed;
-	} else if (input_->PushKey(DIK_UP)) {
+	} else if (input_->PushKey(DIK_W)) {
 		move.y += kCharacterSpeed;
 	}
+
 
 	// 座標移動
 	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
 
 	// 移動限界座標
-	const float kMoveLimitX = 34.5f;
-	const float kMoveLimitY = 19.0f;
+	const float kMoveLimitX = 20;
+	const float kMoveLimitY = 10.5f;
 
 	// 範囲を越えない処理
 	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
@@ -95,22 +108,22 @@ void Player::Update(const ViewProjection& viewProjection) {
 	// 行列を定数バッァに転送
 	worldTransform_.UpdateMatrix();
 
-	//// 自機のワールド座標から3Dレティクルのワールド座標を計算
-	//// 自機から3Dレティクルへの距離
-	// const float kDistancePlayerTo3DReticle = 50.0f;
-	//// 時期から3Dレティクルへのオフセット（Z+向き）
-	// Vector3 offset = {0, 0, 1.0f};
-	//// 自機のワールド行列の回転を反映
-	// offset = TransformNormal(offset, worldTransform_.matWorld_);
-	//// ベクトルの長さを整える
-	// offset = Multiply(kDistancePlayerTo3DReticle, Normalize(offset));
+	// 自機のワールド座標から3Dレティクルのワールド座標を計算
+	// 自機から3Dレティクルへの距離
+	 const float kDistancePlayerTo3DReticle = 35.0f;
+	// 時期から3Dレティクルへのオフセット（Z+向き）
+	 Vector3 offset = {0, 0, 1.0f};
+	// 自機のワールド行列の回転を反映
+	 offset = TransformNormal(offset, worldTransform_.matWorld_);
+	// ベクトルの長さを整える
+	 offset = Multiply(kDistancePlayerTo3DReticle, Normalize(offset));
 
-	//// 3Dレティクルの座標を設定
-	// worldTransform3DReticle_.translation_ = Add(worldTransform_.translation_, offset);
-	// worldTransform3DReticle_.UpdateMatrix();
+	// 3Dレティクルの座標を設定
+	 worldTransform3DReticle_.translation_ = Add(worldTransform_.translation_, offset);
+	 worldTransform3DReticle_.UpdateMatrix();
 
-	// ScreenConversion(viewProjection);
-	WorldConversion(viewProjection);
+	 ScreenConversion(viewProjection);
+	//WorldConversion(viewProjection);
 
 	Attack();
 
@@ -246,28 +259,24 @@ void Player::Rotate() {
 }
 
 void Player::Attack() {
-	//if (input_->TriggerKey(DIK_SPACE)) {
-	//	// 弾があれば解放する(listを使うので必要なし)
-	//	/*if (bullet_) {
-	//	    delete bullet_;
-	//	    bullet_ = nullptr;
-	//	}*/
-	//	Vector3 velocity;
-	//	// 弾の速度
-	//	const float kBulletSpeed = 1.0f;
+	if (input_->TriggerKey(DIK_SPACE)) {
 
-	//	// 自機から照準オブジェクトへのベクトル
-	//	velocity = Subtract(GetWorldPosition3DReticle(), GetWorldPosition());
-	//	velocity = Multiply(kBulletSpeed, Normalize(velocity));
+		Vector3 velocity;
+		// 弾の速度
+		const float kBulletSpeed = 3.0f;
+
+		// 自機から照準オブジェクトへのベクトル
+		velocity = Subtract(GetWorldPosition3DReticle(), GetWorldPosition());
+		velocity = Multiply(kBulletSpeed, Normalize(velocity));
 
 
-	//	// 弾を生成し、初期化
-	//	PlayerBullet* newBullet = new PlayerBullet();
-	//	newBullet->Initialize(model_, GetWorldPosition(), velocity);
+		// 弾を生成し、初期化
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(model_, GetWorldPosition(), velocity);
 
-	//	// 弾を登録する
-	//	bullets_.push_back(newBullet);
-	//}
+		// 弾を登録する
+		bullets_.push_back(newBullet);
+	}
 
 
 	XINPUT_STATE joyState;

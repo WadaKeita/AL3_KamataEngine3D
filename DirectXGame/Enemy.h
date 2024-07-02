@@ -10,6 +10,9 @@ class Player;
 // GameSceneの前方宣言
 class GameScene;
 
+// RailCameraの前方宣言
+class RailCamera;
+
 // 行動フェーズ
 enum class Phase {
 	Approach,
@@ -62,7 +65,6 @@ public:
 	// 発射間隔
 	static const int kFireInterval = 60;
 
-	void SetPlayer(Player* player) { player_ = player; }
 
 	// ワールド座標を取得
 	Vector3 GetWorldPosition();
@@ -76,9 +78,17 @@ public:
 	// 半径を取得
 	const int GetRadius() const { return radius_; };
 
-	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
-
 	bool IsDead() const { return isDead_; }
+
+	/// <summary>
+	/// 親となるワールドトランスフォームをセット
+	/// </summary>
+	/// <param name="parent"></param>
+	void SetParent(const WorldTransform* parent);
+
+	void SetPlayer(Player* player) { player_ = player; }
+	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
+	void SetRailCamera(RailCamera* railCamera) { railCamera_ = railCamera; }
 
 private:
 	// ワールド変換データ
@@ -111,4 +121,11 @@ private:
 
 	// デスフラグ
 	bool isDead_ = false;
+
+	// レールカメラ
+	RailCamera* railCamera_ = nullptr;
+
+	// 持たれてるフラグ
+	bool isHold_ = false;
+
 };
