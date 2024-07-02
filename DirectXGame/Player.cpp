@@ -52,7 +52,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	});
 
 	// キャラクターの移動ベクトル
-	Vector3 move = {0, 0, 0};
+	velocity_ = {0, 0, 0};
 
 	// キャラクターの移動速さ
 	const float kCharacterSpeed = 0.2f;
@@ -62,8 +62,8 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	// ゲームパッド状態取得
 	if (Input::GetInstance()->GetJoystickState(0, joyState)) {
-		move.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
-		move.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
+		velocity_.x += (float)joyState.Gamepad.sThumbLX / SHRT_MAX * kCharacterSpeed;
+		velocity_.y += (float)joyState.Gamepad.sThumbLY / SHRT_MAX * kCharacterSpeed;
 	}
 
 	//// 押した方向で移動ベクトルを変更（左右）
@@ -80,20 +80,20 @@ void Player::Update(const ViewProjection& viewProjection) {
 	//}
 
 	if (input_->PushKey(DIK_A)) {
-		move.x -= kCharacterSpeed;
+		velocity_.x -= kCharacterSpeed;
 	} else if (input_->PushKey(DIK_D)) {
-		move.x += kCharacterSpeed;
+		velocity_.x += kCharacterSpeed;
 	}
 	// 押した方向で移動ベクトルを変更（上下）
 	if (input_->PushKey(DIK_S)) {
-		move.y -= kCharacterSpeed;
+		velocity_.y -= kCharacterSpeed;
 	} else if (input_->PushKey(DIK_W)) {
-		move.y += kCharacterSpeed;
+		velocity_.y += kCharacterSpeed;
 	}
 
 
 	// 座標移動
-	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
+	worldTransform_.translation_ = Add(worldTransform_.translation_, velocity_);
 
 	// 移動限界座標
 	const float kMoveLimitX = 20;

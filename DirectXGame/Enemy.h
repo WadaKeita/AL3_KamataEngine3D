@@ -16,7 +16,7 @@ class RailCamera;
 // 行動フェーズ
 enum class Phase {
 	Approach,
-	Leave,
+	Hold,
 };
 
 /// <summary>
@@ -55,7 +55,7 @@ public:
 	/// <summary>
 	/// 離脱フェーズ
 	/// </summary>
-	void Leave();
+	void Hold();
 
 	/// <summary>
 	/// 弾発射

@@ -51,20 +51,20 @@ void Enemy::Approach() {
 
 	// 移動（ベクトルを加算）
 	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
-	// 規定の位置に到達したら離脱
-	if (worldTransform_.translation_.z < 0.0f) {
-		phase_ = Phase::Leave;
-	}
+	//// 規定の位置に到達したら離脱
+	//if (worldTransform_.translation_.z < 0.0f) {
+	//	phase_ = Phase::Leave;
+	//}
 
 	//// 発射タイマーをカウントダウン
-	//fireTimer_--;
+	// fireTimer_--;
 	//// 指定時間に達した
-	//if (fireTimer_ <= 0) {
+	// if (fireTimer_ <= 0) {
 	//	// 弾を発射
 	//	Fire();
 	//	// 発射タイマーの初期化
 	//	fireTimer_ = kFireInterval;
-	//}
+	// }
 }
 
 void Enemy::InitializeApproach() {
@@ -73,17 +73,34 @@ void Enemy::InitializeApproach() {
 }
 
 // void Enemy::InitializeLeave() {}
+//
+// void Enemy::Leave() {
+//
+//	// キャラクターの移動ベクトル
+//	Vector3 move = {0, 0, 0};
+//
+//	// 移動速度
+//	const float kCharacterSpeed = 0.01f;
+//
+//	move.x -= kCharacterSpeed;
+//	move.y += kCharacterSpeed;
+//
+//	// 移動（ベクトルを加算）
+//	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
+//}
 
-void Enemy::Leave() {
+void Enemy::Hold() {
 
 	// キャラクターの移動ベクトル
 	Vector3 move = {0, 0, 0};
 
-	// 移動速度
-	const float kCharacterSpeed = 0.01f;
+	move = player_->GetVelocity();
 
-	move.x -= kCharacterSpeed;
-	move.y += kCharacterSpeed;
+	//// 移動速度
+	//const float kCharacterSpeed = 0.01f;
+
+	//move.x -= kCharacterSpeed;
+	//move.y += kCharacterSpeed;
 
 	// 移動（ベクトルを加算）
 	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
@@ -127,21 +144,21 @@ Vector3 Enemy::GetWorldPosition() {
 	return worldPos;
 }
 
-void Enemy::OnCollision() { 
+void Enemy::OnCollision() {
 	Vector3 worldPos;
 	worldPos = GetWorldPosition();
-	
+
 	Vector3 enemyPos = Transform(worldPos, Inverse(railCamera_->GetWorldTransform().matWorld_));
 
-	
 	// エネミーとレールカメラの親子関係を結ぶ
 	this->SetParent(&railCamera_->GetWorldTransform());
 
 	worldTransform_.translation_ = enemyPos;
+
+	phase_ = Phase::Hold;
 }
 
-void (Enemy::*Enemy::phaseTable[])() = {&Enemy::Approach, &Enemy::Leave};
-
+void (Enemy::*Enemy::phaseTable[])() = {&Enemy::Approach, &Enemy::Hold};
 
 void Enemy::SetParent(const WorldTransform* parent) {
 	// 親子関係を結ぶ

@@ -59,6 +59,8 @@ public:
 	// 半径を取得
 	const int GetRadius() const { return radius_; };
 
+	const Vector3 GetVelocity() const { return velocity_; };
+
 	/// <summary>
 	/// 親となるワールドトランスフォームをセット
 	/// </summary>
@@ -96,4 +98,7 @@ private:
 
 	// 2Dレティクル用スプライト
 	Sprite* sprite2DReticle_ = nullptr;
+
+	// 移動速度
+	Vector3 velocity_;
 };
