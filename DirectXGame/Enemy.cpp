@@ -8,6 +8,7 @@
 Enemy::~Enemy() {}
 
 void Enemy::Initialize(Model* model, uint32_t textureHandle, const Vector3 pos) {
+
 	// NULLポインタチェック
 	assert(model);
 
@@ -99,6 +100,8 @@ void Enemy::Hold() {
 
 	// 移動（ベクトルを加算）
 	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
+
+
 }
 
 void Enemy::Fire() {
@@ -125,6 +128,20 @@ void Enemy::Fire() {
 
 	// ゲームシーンに弾を登録する
 	gameScene_->AddEnemyBullet(newBullet);
+}
+
+void Enemy::Thrown() {
+
+	// キャラクターの移動ベクトル
+	Vector3 move = {0, 0, 0};
+
+	// 移動速度
+	const float kCharacterSpeed = 0.5f;
+
+	move.z += kCharacterSpeed;
+
+	// 移動（ベクトルを加算）
+	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
 }
 
 Vector3 Enemy::GetWorldPosition() {
@@ -157,11 +174,12 @@ void Enemy::OnCollision() {
 
 	phase_ = Phase::Hold;
 	player_->SetIsCatch(true);
+	player_->SetHoldEnemy(this);
 }
 
 void Enemy::OnCollisionEnemy() { isDead_ = true; }
 
-void (Enemy::*Enemy::phaseTable[])() = {&Enemy::Approach, &Enemy::Hold};
+void (Enemy::*Enemy::phaseTable[])() = {&Enemy::Approach, &Enemy::Hold, &Enemy::Thrown};
 
 void Enemy::SetParent(const WorldTransform* parent) {
 	// 親子関係を結ぶ

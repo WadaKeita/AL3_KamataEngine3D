@@ -17,6 +17,7 @@ class RailCamera;
 enum class Phase {
 	Approach,
 	Hold,
+	Thrown,
 };
 
 /// <summary>
@@ -62,6 +63,8 @@ public:
 	/// </summary>
 	void Fire();
 
+	void Thrown();
+
 	// 発射間隔
 	static const int kFireInterval = 60;
 
@@ -92,6 +95,8 @@ public:
 	void SetRailCamera(RailCamera* railCamera) { railCamera_ = railCamera; }
 
 	const bool GetIsHold() { return isHold_; }
+
+	void SetPhaseThrown() { phase_ = Phase::Thrown; }
 
 private:
 	// ワールド変換データ

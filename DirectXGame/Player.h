@@ -7,6 +7,9 @@
 #include "ViewProjection.h"
 #include <list>
 
+// 敵機クラスの前方宣言
+class Enemy;
+
 /// <summary>
 /// 自キャラ
 /// </summary>
@@ -75,6 +78,8 @@ public:
 
 	void WorldConversion(const ViewProjection& viewProjection);
 
+	void SetHoldEnemy(Enemy* enemy) { holdEnemy_ = enemy; }
+
 	const Vector3 GetMovePos();
 
 	const bool GetIsCatch() { return isCatch_; };
@@ -111,4 +116,8 @@ private:
 
 	// 敵を持っているか
 	bool isCatch_;
+
+	// 持っている敵
+	Enemy* holdEnemy_ = nullptr;
+
 };

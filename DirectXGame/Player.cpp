@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Enemy.h"
 #include "Function.h"
 #include "ImGuiManager.h"
 #include "TextureManager.h"
@@ -126,9 +127,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 	ScreenConversion(viewProjection);
 	// WorldConversion(viewProjection);
 
-	if (!isCatch_) {
-		Attack();
-	}
+	Attack();
 
 	// 弾更新
 	for (PlayerBullet* bullet : bullets_) {
@@ -272,20 +271,28 @@ void Player::Rotate() {
 void Player::Attack() {
 	if (input_->TriggerKey(DIK_SPACE)) {
 
-		Vector3 velocity;
-		// 弾の速度
-		const float kBulletSpeed = 3.0f;
+		if (!isCatch_) {
+			Vector3 velocity;
+			// 弾の速度
+			const float kBulletSpeed = 3.0f;
 
-		// 自機から照準オブジェクトへのベクトル
-		velocity = Subtract(GetWorldPosition3DReticle(), GetWorldPosition());
-		velocity = Multiply(kBulletSpeed, Normalize(velocity));
+			// 自機から照準オブジェクトへのベクトル
+			velocity = Subtract(GetWorldPosition3DReticle(), GetWorldPosition());
+			velocity = Multiply(kBulletSpeed, Normalize(velocity));
 
-		// 弾を生成し、初期化
-		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(model_, GetWorldPosition(), velocity);
+			// 弾を生成し、初期化
+			PlayerBullet* newBullet = new PlayerBullet();
+			newBullet->Initialize(model_, GetWorldPosition(), velocity);
 
-		// 弾を登録する
-		bullets_.push_back(newBullet);
+			// 弾を登録する
+			bullets_.push_back(newBullet);
+
+		} else {
+			if (holdEnemy_ != nullptr) {
+				holdEnemy_->SetPhaseThrown();
+				isCatch_ = false;
+			}
+		}
 	}
 
 	XINPUT_STATE joyState;
