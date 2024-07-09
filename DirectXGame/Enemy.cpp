@@ -18,7 +18,7 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle, const Vector3 pos) 
 
 	worldTransform_.translation_ = pos;
 
-	InitializeApproach();
+	//InitializeApproach();
 }
 
 void Enemy::Update() {
@@ -66,11 +66,11 @@ void Enemy::Approach() {
 	//	fireTimer_ = kFireInterval;
 	// }
 }
-
-void Enemy::InitializeApproach() {
-	// 発射タイマーを初期化
-	fireTimer_ = kFireInterval;
-}
+//
+//void Enemy::InitializeApproach() {
+//	// 発射タイマーを初期化
+//	fireTimer_ = kFireInterval;
+//}
 
 // void Enemy::InitializeLeave() {}
 //
@@ -94,13 +94,8 @@ void Enemy::Hold() {
 	// キャラクターの移動ベクトル
 	Vector3 move = {0, 0, 0};
 
-	move = player_->GetVelocity();
-
-	//// 移動速度
-	//const float kCharacterSpeed = 0.01f;
-
-	//move.x -= kCharacterSpeed;
-	//move.y += kCharacterSpeed;
+	// プレイヤーの現在位置と1f前の位置の差分を元に移動
+	move = player_->GetMovePos();
 
 	// 移動（ベクトルを加算）
 	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
@@ -137,14 +132,17 @@ Vector3 Enemy::GetWorldPosition() {
 	// ワールド座標を入れる変数
 	Vector3 worldPos;
 	// ワールド行列の並行移動成分を取得（ワールド座標）
-	worldPos.x = worldTransform_.translation_.x;
-	worldPos.y = worldTransform_.translation_.y;
-	worldPos.z = worldTransform_.translation_.z;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
 
 	return worldPos;
 }
 
 void Enemy::OnCollision() {
+
+	if (player_->GetIsCatch()) { return; }
+	
 	Vector3 worldPos;
 	worldPos = GetWorldPosition();
 
@@ -155,8 +153,13 @@ void Enemy::OnCollision() {
 
 	worldTransform_.translation_ = enemyPos;
 
+	isHold_ = true;
+
 	phase_ = Phase::Hold;
+	player_->SetIsCatch(true);
 }
+
+void Enemy::OnCollisionEnemy() { isDead_ = true; }
 
 void (Enemy::*Enemy::phaseTable[])() = {&Enemy::Approach, &Enemy::Hold};
 

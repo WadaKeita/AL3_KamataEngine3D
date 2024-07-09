@@ -46,7 +46,7 @@ public:
 	/// <summary>
 	/// 接近フェーズ初期化
 	/// </summary>
-	void InitializeApproach();
+	//void InitializeApproach();
 	
 	/// <summary>
 	/// 離脱フェーズ初期化
@@ -71,6 +71,7 @@ public:
 
 	// 衝突を検出したら呼び出されるコールバック関数
 	void OnCollision();
+	void OnCollisionEnemy();
 
 	// 弾リストを取得
 	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
@@ -89,6 +90,8 @@ public:
 	void SetPlayer(Player* player) { player_ = player; }
 	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 	void SetRailCamera(RailCamera* railCamera) { railCamera_ = railCamera; }
+
+	const bool GetIsHold() { return isHold_; }
 
 private:
 	// ワールド変換データ

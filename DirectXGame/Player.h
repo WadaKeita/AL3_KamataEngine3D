@@ -75,6 +75,11 @@ public:
 
 	void WorldConversion(const ViewProjection& viewProjection);
 
+	const Vector3 GetMovePos();
+
+	const bool GetIsCatch() { return isCatch_; };
+	void SetIsCatch(const bool isCatch) { isCatch_ = isCatch; };
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -101,4 +106,9 @@ private:
 
 	// 移動速度
 	Vector3 velocity_;
+
+	Vector3 posTmp_;
+
+	// 敵を持っているか
+	bool isCatch_;
 };

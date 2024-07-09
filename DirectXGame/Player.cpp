@@ -40,7 +40,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	viewProjection;
 
-	//Rotate();
+	// Rotate();
 
 	// デスフラグの立った弾を削除
 	bullets_.remove_if([](PlayerBullet* bullet) {
@@ -67,17 +67,17 @@ void Player::Update(const ViewProjection& viewProjection) {
 	}
 
 	//// 押した方向で移動ベクトルを変更（左右）
-	//if (input_->PushKey(DIK_LEFT)) {
+	// if (input_->PushKey(DIK_LEFT)) {
 	//	move.x -= kCharacterSpeed;
-	//} else if (input_->PushKey(DIK_RIGHT)) {
+	// } else if (input_->PushKey(DIK_RIGHT)) {
 	//	move.x += kCharacterSpeed;
-	//}
+	// }
 	//// 押した方向で移動ベクトルを変更（上下）
-	//if (input_->PushKey(DIK_DOWN)) {
+	// if (input_->PushKey(DIK_DOWN)) {
 	//	move.y -= kCharacterSpeed;
-	//} else if (input_->PushKey(DIK_UP)) {
+	// } else if (input_->PushKey(DIK_UP)) {
 	//	move.y += kCharacterSpeed;
-	//}
+	// }
 
 	if (input_->PushKey(DIK_A)) {
 		velocity_.x -= kCharacterSpeed;
@@ -91,6 +91,7 @@ void Player::Update(const ViewProjection& viewProjection) {
 		velocity_.y += kCharacterSpeed;
 	}
 
+	posTmp_ = GetWorldPosition();
 
 	// 座標移動
 	worldTransform_.translation_ = Add(worldTransform_.translation_, velocity_);
@@ -110,22 +111,24 @@ void Player::Update(const ViewProjection& viewProjection) {
 
 	// 自機のワールド座標から3Dレティクルのワールド座標を計算
 	// 自機から3Dレティクルへの距離
-	 const float kDistancePlayerTo3DReticle = 35.0f;
+	const float kDistancePlayerTo3DReticle = 35.0f;
 	// 時期から3Dレティクルへのオフセット（Z+向き）
-	 Vector3 offset = {0, 0, 1.0f};
+	Vector3 offset = {0, 0, 1.0f};
 	// 自機のワールド行列の回転を反映
-	 offset = TransformNormal(offset, worldTransform_.matWorld_);
+	offset = TransformNormal(offset, worldTransform_.matWorld_);
 	// ベクトルの長さを整える
-	 offset = Multiply(kDistancePlayerTo3DReticle, Normalize(offset));
+	offset = Multiply(kDistancePlayerTo3DReticle, Normalize(offset));
 
 	// 3Dレティクルの座標を設定
-	 worldTransform3DReticle_.translation_ = Add(worldTransform_.translation_, offset);
-	 worldTransform3DReticle_.UpdateMatrix();
+	worldTransform3DReticle_.translation_ = Add(worldTransform_.translation_, offset);
+	worldTransform3DReticle_.UpdateMatrix();
 
-	 ScreenConversion(viewProjection);
-	//WorldConversion(viewProjection);
+	ScreenConversion(viewProjection);
+	// WorldConversion(viewProjection);
 
-	Attack();
+	if (!isCatch_) {
+		Attack();
+	}
 
 	// 弾更新
 	for (PlayerBullet* bullet : bullets_) {
@@ -246,6 +249,14 @@ void Player::WorldConversion(const ViewProjection& viewProjection) {
 	ImGui::End();
 }
 
+const Vector3 Player::GetMovePos() {
+	Vector3 result;
+
+	result = Subtract(GetWorldPosition(), posTmp_);
+
+	return result;
+}
+
 void Player::Rotate() {
 	// 回転速さ[ラジアン/frame]
 	const float kRotSpeed = 0.02f;
@@ -269,7 +280,6 @@ void Player::Attack() {
 		velocity = Subtract(GetWorldPosition3DReticle(), GetWorldPosition());
 		velocity = Multiply(kBulletSpeed, Normalize(velocity));
 
-
 		// 弾を生成し、初期化
 		PlayerBullet* newBullet = new PlayerBullet();
 		newBullet->Initialize(model_, GetWorldPosition(), velocity);
@@ -277,7 +287,6 @@ void Player::Attack() {
 		// 弾を登録する
 		bullets_.push_back(newBullet);
 	}
-
 
 	XINPUT_STATE joyState;
 	// ゲームパッド未接続なら何もせず抜ける
@@ -303,7 +312,6 @@ void Player::Attack() {
 		// 弾を登録する
 		bullets_.push_back(newBullet);
 	}
-
 }
 
 Vector3 Player::GetWorldPosition() {
