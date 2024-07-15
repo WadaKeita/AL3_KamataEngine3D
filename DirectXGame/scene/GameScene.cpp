@@ -48,7 +48,6 @@ void GameScene::Initialize() {
 	// 自キャラの初期化
 	player_->Initialize(model_, playerTextureHandle_, playerPosition);
 
-
 	railCamera_ = new RailCamera();
 	// レールカメラの生成
 	railCamera_->Initialize({0, 0, 0}, {0, 0, 0});
@@ -242,28 +241,31 @@ void GameScene::CheckAllCollisions() {
 	// 敵キャラの座標
 	for (Enemy* enemy : enemys_) {
 
-		posA = enemy->GetWorldPosition();
+		if (!enemy->GetIsHold()) { // 放った敵に弾が当たらないようにする
 
-		// 自弾と敵キャラの当たり判定
-		for (PlayerBullet* bullet : playerBullets) {
-			// 自弾の座標
-			posB = bullet->GetWorldPosition();
+			posA = enemy->GetWorldPosition();
 
-			// 2つの球の中心点間の距離を求める
-			float distance = Length({posB.x - posA.x, posB.y - posA.y, posB.z - posA.z});
+			// 自弾と敵キャラの当たり判定
+			for (PlayerBullet* bullet : playerBullets) {
+				// 自弾の座標
+				posB = bullet->GetWorldPosition();
 
-			// 球と球の交差判定
-			if (distance <= enemy->GetRadius() + bullet->GetRadius()) {
-				// 自キャラの衝突時のコールバックを呼び出す
-				enemy->OnCollision();
-				// 敵弾の衝突時のコールバックを呼び出す
-				bullet->OnCollision();
+				// 2つの球の中心点間の距離を求める
+				float distance = Length({posB.x - posA.x, posB.y - posA.y, posB.z - posA.z});
+
+				// 球と球の交差判定
+				if (distance <= enemy->GetRadius() + bullet->GetRadius()) {
+
+					// 自キャラの衝突時のコールバックを呼び出す
+					enemy->OnCollision();
+					// 敵弾の衝突時のコールバックを呼び出す
+					bullet->OnCollision();
+				}
 			}
 		}
 	}
 #pragma endregion
 
-	
 #pragma region 持たれた敵と敵の当たり判定
 
 	// 持たれた敵と敵の当たり判定
@@ -297,33 +299,33 @@ void GameScene::CheckAllCollisions() {
 	}
 
 #pragma endregion
-	//#pragma region 自弾と敵弾の当たり判定
-//
-//	// 自弾と敵弾の当たり判定
-//	for (PlayerBullet* bulletA : playerBullets) {
-//
-//		// 自弾の座標
-//		posA = bulletA->GetWorldPosition();
-//
-//		for (EnemyBullet* bulletB : enemyBullets_) {
-//
-//			// 敵弾の座標
-//			posB = bulletB->GetWorldPosition();
-//
-//			// 2つの球の中心点間の距離を求める
-//			float distance = Length({posB.x - posA.x, posB.y - posA.y, posB.z - posA.z});
-//
-//			// 球と球の交差判定
-//			if (distance <= bulletA->GetRadius() + bulletB->GetRadius()) {
-//				// 自キャラの衝突時のコールバックを呼び出す
-//				bulletA->OnCollision();
-//				// 敵弾の衝突時のコールバックを呼び出す
-//				bulletB->OnCollision();
-//			}
-//		}
-//	}
-//
-//#pragma endregion
+	// #pragma region 自弾と敵弾の当たり判定
+	//
+	//	// 自弾と敵弾の当たり判定
+	//	for (PlayerBullet* bulletA : playerBullets) {
+	//
+	//		// 自弾の座標
+	//		posA = bulletA->GetWorldPosition();
+	//
+	//		for (EnemyBullet* bulletB : enemyBullets_) {
+	//
+	//			// 敵弾の座標
+	//			posB = bulletB->GetWorldPosition();
+	//
+	//			// 2つの球の中心点間の距離を求める
+	//			float distance = Length({posB.x - posA.x, posB.y - posA.y, posB.z - posA.z});
+	//
+	//			// 球と球の交差判定
+	//			if (distance <= bulletA->GetRadius() + bulletB->GetRadius()) {
+	//				// 自キャラの衝突時のコールバックを呼び出す
+	//				bulletA->OnCollision();
+	//				// 敵弾の衝突時のコールバックを呼び出す
+	//				bulletB->OnCollision();
+	//			}
+	//		}
+	//	}
+	//
+	// #pragma endregion
 }
 
 void GameScene::AddEnemyBullet(EnemyBullet* enemyBullet) {
@@ -348,7 +350,7 @@ void GameScene::AddEnemy(Vector3 pos) {
 }
 
 void GameScene::LoadEnemyPopData() {
-	
+
 	// ファイルを開く
 	std::ifstream file;
 	file.open("Resources/enemyPop.csv");
@@ -386,7 +388,7 @@ void GameScene::UpdateEnemyPopCommands() {
 		// "//"からはじまる行はコメント
 		if (word.find("//") == 0) {
 			// コメント行を飛ばす
-			continue;		
+			continue;
 		}
 
 		// POPコマンド

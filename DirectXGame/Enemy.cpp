@@ -19,7 +19,7 @@ void Enemy::Initialize(Model* model, uint32_t textureHandle, const Vector3 pos) 
 
 	worldTransform_.translation_ = pos;
 
-	//InitializeApproach();
+	// InitializeApproach();
 }
 
 void Enemy::Update() {
@@ -27,6 +27,10 @@ void Enemy::Update() {
 	(this->*phaseTable[static_cast<size_t>(phase_)])();
 
 	worldTransform_.UpdateMatrix();
+
+	if (worldTransform_.translation_.z > 200) {
+		DeadEnemy();
+	}
 
 	ImGui::Begin("enemy");
 
@@ -42,20 +46,26 @@ void Enemy::Draw(const ViewProjection& viewProjection) {
 }
 
 void Enemy::Approach() {
-	// キャラクターの移動ベクトル
-	Vector3 move = {0, 0, 0};
+	if (worldTransform_.translation_.z > 60) {
 
-	// 移動速度
-	const float kCharacterSpeed = 0.1f;
+		// キャラクターの移動ベクトル
+		Vector3 move = {0, 0, 0};
 
-	move.z -= kCharacterSpeed;
+		// 移動速度
+		const float kCharacterSpeed = 0.1f;
 
-	// 移動（ベクトルを加算）
-	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
+		move.z -= kCharacterSpeed;
+
+		// 移動（ベクトルを加算）
+		worldTransform_.translation_ = Add(worldTransform_.translation_, move);
+
+	} else if (worldTransform_.translation_.z < 60) {
+		worldTransform_.translation_.z = 60;
+	}
 	//// 規定の位置に到達したら離脱
-	//if (worldTransform_.translation_.z < 0.0f) {
+	// if (worldTransform_.translation_.z < 0.0f) {
 	//	phase_ = Phase::Leave;
-	//}
+	// }
 
 	//// 発射タイマーをカウントダウン
 	// fireTimer_--;
@@ -68,7 +78,7 @@ void Enemy::Approach() {
 	// }
 }
 //
-//void Enemy::InitializeApproach() {
+// void Enemy::InitializeApproach() {
 //	// 発射タイマーを初期化
 //	fireTimer_ = kFireInterval;
 //}
@@ -100,8 +110,6 @@ void Enemy::Hold() {
 
 	// 移動（ベクトルを加算）
 	worldTransform_.translation_ = Add(worldTransform_.translation_, move);
-
-
 }
 
 void Enemy::Fire() {
@@ -158,8 +166,15 @@ Vector3 Enemy::GetWorldPosition() {
 
 void Enemy::OnCollision() {
 
-	if (player_->GetIsCatch()) { return; }
-	
+	if (player_->GetIsCatch()) {
+		return;
+	}
+
+	// 一度持って発射されたら持てないようにする
+	if (isHold_) {
+		return;
+	}
+
 	Vector3 worldPos;
 	worldPos = GetWorldPosition();
 

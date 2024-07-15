@@ -25,7 +25,6 @@ enum class Phase {
 /// </summary>
 class Enemy {
 public:
-
 	~Enemy();
 
 	/// <summary>
@@ -47,12 +46,12 @@ public:
 	/// <summary>
 	/// 接近フェーズ初期化
 	/// </summary>
-	//void InitializeApproach();
-	
+	// void InitializeApproach();
+
 	/// <summary>
 	/// 離脱フェーズ初期化
 	/// </summary>
-	//void InitializeLeave();
+	// void InitializeLeave();
 	/// <summary>
 	/// 離脱フェーズ
 	/// </summary>
@@ -68,7 +67,6 @@ public:
 	// 発射間隔
 	static const int kFireInterval = 60;
 
-
 	// ワールド座標を取得
 	Vector3 GetWorldPosition();
 
@@ -78,11 +76,12 @@ public:
 
 	// 弾リストを取得
 	const std::list<EnemyBullet*>& GetBullets() const { return bullets_; }
-		
+
 	// 半径を取得
 	const int GetRadius() const { return radius_; };
 
 	bool IsDead() const { return isDead_; }
+	void DeadEnemy() { isDead_ = true; }
 
 	/// <summary>
 	/// 親となるワールドトランスフォームをセット
@@ -135,5 +134,4 @@ private:
 
 	// 持たれてるフラグ
 	bool isHold_ = false;
-
 };
