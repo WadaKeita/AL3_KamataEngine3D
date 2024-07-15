@@ -33,8 +33,6 @@ public:
 
 	bool IsDead() const { return isDead_; }
 
-	bool isPush = true;
-
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
