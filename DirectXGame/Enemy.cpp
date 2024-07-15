@@ -29,7 +29,7 @@ void Enemy::Update() {
 	worldTransform_.UpdateMatrix();
 
 	if (worldTransform_.translation_.z > 200) {
-		DeadEnemy();
+		isDead_ = true;
 	}
 
 	ImGui::Begin("enemy");

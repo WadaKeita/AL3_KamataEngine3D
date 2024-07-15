@@ -81,7 +81,7 @@ public:
 	const int GetRadius() const { return radius_; };
 
 	bool IsDead() const { return isDead_; }
-	void DeadEnemy() { isDead_ = true; }
+	//void DeadEnemy() { isDead_ = true; }
 
 	/// <summary>
 	/// 親となるワールドトランスフォームをセット

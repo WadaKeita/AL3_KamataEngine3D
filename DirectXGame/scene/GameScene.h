@@ -4,6 +4,7 @@
 #include "DebugCamera.h"
 #include "DirectXCommon.h"
 #include "Enemy.h"
+#include "BossEnemy.h"
 #include "Input.h"
 #include "Model.h"
 #include "Player.h"
@@ -62,6 +63,8 @@ public: // メンバ関数
 	/// <param name="enemyBullet">敵弾</param>
 	void AddEnemy(Vector3 pos);
 
+	void AddBossEnemy(Vector3 pos);
+
 	/// <summary>
 	/// 敵発生データの読み込み
 	/// </summary>
@@ -84,7 +87,11 @@ private: // メンバ変数
 
 	uint32_t playerTextureHandle_ = 0;
 	uint32_t enemyTextureHandle_ = 0;
+	uint32_t bossEnemyTextureHandle_ = 0;
 	Model* model_ = nullptr;
+	Model* playerModel_ = nullptr;
+	Model* enemyModel_ = nullptr;
+	Model* bossEnemyModel_ = nullptr;
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
 
@@ -93,6 +100,8 @@ private: // メンバ変数
 
 	// 敵
 	Enemy* enemy_ = nullptr;
+
+	BossEnemy* bossEnemy_ = nullptr;
 
 	std::list<Enemy*> enemys_;
 	std::list<EnemyBullet*> enemyBullets_;
